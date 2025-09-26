@@ -8,57 +8,51 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { Building2 } from "lucide-react";
-
 export default function Auth() {
-  const { user, signIn, signUp, loading } = useAuth();
+  const {
+    user,
+    signIn,
+    signUp,
+    loading
+  } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if already authenticated
   if (user && !loading) {
     return <Navigate to="/dashboard" replace />;
   }
-
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-
     await signIn(email, password);
     setIsLoading(false);
   };
-
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
     const role = formData.get('role') as string;
-
-    await signUp(email, password, { name, role });
+    await signUp(email, password, {
+      name,
+      role
+    });
     setIsLoading(false);
   };
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
+    return <div className="min-h-screen flex items-center justify-center">
         <div>Chargement...</div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+  return <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <div className="flex items-center justify-center mb-4">
-            <Building2 className="h-8 w-8 text-primary" />
-          </div>
+          
           <CardTitle className="text-2xl text-center">Jeff de Bruges</CardTitle>
           <CardDescription className="text-center">
             Plateforme de gestion des campagnes scolaires
@@ -75,22 +69,11 @@ export default function Auth() {
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
-                  <Input
-                    id="signin-email"
-                    name="email"
-                    type="email"
-                    placeholder="votre@email.com"
-                    required
-                  />
+                  <Input id="signin-email" name="email" type="email" placeholder="votre@email.com" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signin-password">Mot de passe</Label>
-                  <Input
-                    id="signin-password"
-                    name="password"
-                    type="password"
-                    required
-                  />
+                  <Input id="signin-password" name="password" type="password" required />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Connexion..." : "Se connecter"}
@@ -102,32 +85,15 @@ export default function Auth() {
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-name">Nom complet</Label>
-                  <Input
-                    id="signup-name"
-                    name="name"
-                    type="text"
-                    placeholder="Votre nom"
-                    required
-                  />
+                  <Input id="signup-name" name="name" type="text" placeholder="Votre nom" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    name="email"
-                    type="email"
-                    placeholder="votre@email.com"
-                    required
-                  />
+                  <Input id="signup-email" name="email" type="email" placeholder="votre@email.com" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Mot de passe</Label>
-                  <Input
-                    id="signup-password"
-                    name="password"
-                    type="password"
-                    required
-                  />
+                  <Input id="signup-password" name="password" type="password" required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="role">Rôle</Label>
@@ -151,6 +117,5 @@ export default function Auth() {
           </Tabs>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 }
