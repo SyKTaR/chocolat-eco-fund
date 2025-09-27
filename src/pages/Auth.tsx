@@ -78,6 +78,21 @@ export default function Auth() {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Connexion..." : "Se connecter"}
                 </Button>
+                
+                <div className="grid grid-cols-2 gap-2 mt-4">
+                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                    Test Admin
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                    Test Magasin
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                    Test École
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                    Test Parent
+                  </Button>
+                </div>
               </form>
             </TabsContent>
             

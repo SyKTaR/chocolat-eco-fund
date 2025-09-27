@@ -25,12 +25,12 @@ export function Layout({ children }: LayoutProps) {
           <header className="h-16 flex items-center justify-between border-b px-4">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
-              <h1 className="text-xl font-semibold">Jeff de Bruges</h1>
+              <h1 className="text-xl font-semibold hidden md:block">Jeff de Bruges</h1>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               {profile && (
-                <div className="text-sm">
+                <div className="text-sm hidden md:block">
                   <span className="text-muted-foreground">Connecté en tant que:</span>
                   <span className="ml-1 font-medium">{profile.name}</span>
                   <span className="ml-2 px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">
@@ -40,8 +40,8 @@ export function Layout({ children }: LayoutProps) {
               )}
               
               <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
+                <LogOut className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Déconnexion</span>
               </Button>
             </div>
           </header>
