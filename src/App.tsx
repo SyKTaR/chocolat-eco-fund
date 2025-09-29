@@ -11,7 +11,7 @@ import Campaigns from "./pages/Campaigns";
 import CampaignDetails from "./pages/CampaignDetails";
 import Stores from "./pages/Stores";
 import StoreDetails from "./pages/StoreDetails";
-import ManageSchools from "./pages/ManageSchools";
+import ManageSchoolsPage from "./pages/ManageSchools";
 import Schools from "./pages/Schools";
 import Shop from "./pages/Shop";
 import Orders from "./pages/Orders";
@@ -101,7 +101,7 @@ const App = () => (
               path="/manage-schools/:storeId"
               element={
                 <ProtectedRoute>
-                  <ManageSchools />
+                  <ManageSchoolsPage />
                 </ProtectedRoute>
               }
             />
