@@ -8,7 +8,9 @@ import { Layout } from "@/components/Layout";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Campaigns from "./pages/Campaigns";
+import CampaignDetails from "./pages/CampaignDetails";
 import Stores from "./pages/Stores";
+import StoreDetails from "./pages/StoreDetails";
 import Schools from "./pages/Schools";
 import Shop from "./pages/Shop";
 import Orders from "./pages/Orders";
@@ -71,10 +73,26 @@ const App = () => (
               }
             />
             <Route
+              path="/campaigns/:id"
+              element={
+                <ProtectedRoute>
+                  <CampaignDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/stores"
               element={
                 <ProtectedRoute>
                   <Stores />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stores/:id"
+              element={
+                <ProtectedRoute>
+                  <StoreDetails />
                 </ProtectedRoute>
               }
             />

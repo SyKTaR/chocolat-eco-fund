@@ -80,16 +80,56 @@ export default function Auth() {
                 </Button>
                 
                 <div className="grid grid-cols-2 gap-2 mt-4">
-                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      await signIn("admin@test.com", "password123");
+                      setIsLoading(false);
+                    }}
+                  >
                     Test Admin
                   </Button>
-                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      await signIn("magasin@test.com", "password123");
+                      setIsLoading(false);
+                    }}
+                  >
                     Test Magasin
                   </Button>
-                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      await signIn("ecole@test.com", "password123");
+                      setIsLoading(false);
+                    }}
+                  >
                     Test École
                   </Button>
-                  <Button type="button" variant="outline" size="sm" disabled={isLoading}>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      await signIn("parent@test.com", "password123");
+                      setIsLoading(false);
+                    }}
+                  >
                     Test Parent
                   </Button>
                 </div>

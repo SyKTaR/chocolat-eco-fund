@@ -222,7 +222,12 @@ export default function Campaigns() {
                 <span>Marge écoles: {campaign.margin_percentage}%</span>
               </div>
               <div className="pt-2">
-                <Button variant="outline" size="sm" className="w-full">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => window.location.href = `/campaigns/${campaign.id}`}
+                >
                   Voir les détails
                 </Button>
               </div>

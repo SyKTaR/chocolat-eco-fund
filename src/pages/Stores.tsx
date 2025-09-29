@@ -213,7 +213,12 @@ export default function Stores() {
                 <span>Écoles partenaires: 0</span>
               </div>
               <div className="pt-2 flex flex-col gap-2 md:flex-row">
-                <Button variant="outline" size="sm" className="flex-1">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => window.location.href = `/stores/${store.id}`}
+                >
                   Voir les détails
                 </Button>
                 <Button variant="outline" size="sm" className="flex-1">
