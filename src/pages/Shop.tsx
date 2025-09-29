@@ -41,18 +41,39 @@ export default function Shop() {
   const [schoolInfo, setSchoolInfo] = useState<any>(null);
 
   const fetchProducts = async () => {
-    // For now, we'll fetch all available products
+    if (!profile?.school_id) {
+      setProducts([]);
+      return;
+    }
+
+    // Get products from active campaigns for this school
     const { data, error } = await supabase
       .from('products')
-      .select('*')
-      .eq('is_available', true);
+      .select(`
+        *,
+        campaigns!inner(
+          id,
+          name,
+          is_active,
+          campaign_schools!inner(
+            school_id,
+            is_active
+          )
+        )
+      `)
+      .eq('is_available', true)
+      .eq('campaigns.is_active', true)
+      .eq('campaigns.campaign_schools.school_id', profile.school_id)
+      .eq('campaigns.campaign_schools.is_active', true);
 
     if (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: "Impossible de charger les produits"
-      });
+      console.error('Error fetching products:', error);
+      // Fallback: get all available products
+      const { data: fallbackData } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_available', true);
+      setProducts(fallbackData || []);
     } else {
       setProducts(data || []);
     }

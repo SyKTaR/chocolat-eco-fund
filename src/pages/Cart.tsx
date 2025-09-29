@@ -173,7 +173,7 @@ export default function Cart() {
           total_amount: getTotalPrice(),
           margin_amount: getMarginAmount(),
           status: 'pending',
-          campaign_id: cartItems[0]?.product.campaign_id // For simplicity, using first item's campaign
+          campaign_id: cartItems[0]?.product.campaign_id || null
         }])
         .select()
         .single();
