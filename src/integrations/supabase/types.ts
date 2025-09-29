@@ -146,6 +146,33 @@ export type Database = {
           },
         ]
       }
+      cart_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          quantity: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          quantity?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       kv_store_acd3eb81: {
         Row: {
           key: string
@@ -266,6 +293,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      parent_invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          invitation_code: string
+          invited_by: string
+          parent_email: string
+          parent_name: string | null
+          school_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invitation_code: string
+          invited_by: string
+          parent_email: string
+          parent_name?: string | null
+          school_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invitation_code?: string
+          invited_by?: string
+          parent_email?: string
+          parent_name?: string | null
+          school_id?: string
+          status?: string
+        }
+        Relationships: []
       }
       products: {
         Row: {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,14 +19,24 @@ interface Product {
   campaign_id: string;
 }
 
-interface CartItem extends Product {
+interface CartItem {
+  id: string;
+  product_id: string;
   quantity: number;
+  product: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    image_url: string;
+  };
 }
 
 export default function Shop() {
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [schoolInfo, setSchoolInfo] = useState<any>(null);
 
@@ -63,51 +74,129 @@ export default function Shop() {
     }
   };
 
+  const fetchCartItems = async () => {
+    if (!profile?.id) return;
+
+    const { data, error } = await supabase
+      .from('cart_items')
+      .select(`
+        id,
+        product_id,
+        quantity,
+        products!inner(
+          id,
+          name,
+          description,
+          price,
+          image_url
+        )
+      `)
+      .eq('user_id', profile.id);
+
+    if (!error) {
+      const formattedData = (data || []).map(item => ({
+        ...item,
+        product: item.products
+      }));
+      setCartItems(formattedData);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([fetchProducts(), fetchSchoolInfo()]).then(() => {
+    Promise.all([fetchProducts(), fetchSchoolInfo(), fetchCartItems()]).then(() => {
       setLoading(false);
     });
   }, [profile]);
 
-  const addToCart = (product: Product) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [...prev, { ...product, quantity: 1 }];
+  const addToCart = async (product: Product) => {
+    if (!profile?.id) return;
+
+    // Check if item already exists in cart
+    const existingItem = cartItems.find(item => item.product_id === product.id);
+    
+    if (existingItem) {
+      // Update quantity
+      const { error } = await supabase
+        .from('cart_items')
+        .update({ quantity: existingItem.quantity + 1 })
+        .eq('id', existingItem.id);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible d'ajouter le produit"
+        });
+        return;
       }
-    });
+    } else {
+      // Insert new item
+      const { error } = await supabase
+        .from('cart_items')
+        .insert([{
+          user_id: profile.id,
+          product_id: product.id,
+          quantity: 1
+        }]);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible d'ajouter le produit"
+        });
+        return;
+      }
+    }
+
     toast({
       title: "Produit ajouté",
       description: `${product.name} ajouté au panier`
     });
+    
+    fetchCartItems();
   };
 
-  const updateQuantity = (productId: string, newQuantity: number) => {
+  const updateQuantity = async (cartItemId: string, newQuantity: number) => {
     if (newQuantity === 0) {
-      setCart(prev => prev.filter(item => item.id !== productId));
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('id', cartItemId);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de supprimer l'article"
+        });
+        return;
+      }
     } else {
-      setCart(prev =>
-        prev.map(item =>
-          item.id === productId
-            ? { ...item, quantity: newQuantity }
-            : item
-        )
-      );
+      const { error } = await supabase
+        .from('cart_items')  
+        .update({ quantity: newQuantity })
+        .eq('id', cartItemId);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de mettre à jour la quantité"
+        });
+        return;
+      }
     }
+    
+    fetchCartItems();
   };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
   };
 
   const getCartItemsCount = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   if (!profile) {
@@ -150,14 +239,14 @@ export default function Shop() {
               </p>
             )}
           </div>
-          {cart.length > 0 && (
+          {cartItems.length > 0 && (
             <div className="bg-background rounded-lg p-4 shadow-sm border">
               <div className="text-center">
                 <div className="font-semibold">{getCartItemsCount()} articles</div>
                 <div className="text-lg font-bold text-primary">
                   {getTotalPrice().toFixed(2)} €
                 </div>
-                <Button size="sm" className="mt-2 w-full">
+                <Button size="sm" className="mt-2 w-full" onClick={() => navigate('/cart')}>
                   Voir le panier
                 </Button>
               </div>
@@ -169,7 +258,7 @@ export default function Shop() {
       {/* Products grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {products.map((product) => {
-          const cartItem = cart.find(item => item.id === product.id);
+          const cartItem = cartItems.find(item => item.product_id === product.id);
           return (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-3">
@@ -213,7 +302,7 @@ export default function Shop() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => updateQuantity(product.id, cartItem.quantity - 1)}
+                      onClick={() => updateQuantity(cartItem.id, cartItem.quantity - 1)}
                       className="h-8 w-8 p-0"
                     >
                       <Minus className="h-3 w-3" />
@@ -222,7 +311,7 @@ export default function Shop() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => updateQuantity(product.id, cartItem.quantity + 1)}
+                      onClick={() => updateQuantity(cartItem.id, cartItem.quantity + 1)}
                       className="h-8 w-8 p-0"
                     >
                       <Plus className="h-3 w-3" />
@@ -256,9 +345,9 @@ export default function Shop() {
       )}
 
       {/* Floating cart button on mobile */}
-      {cart.length > 0 && (
+      {cartItems.length > 0 && (
         <div className="fixed bottom-4 right-4 md:hidden z-50">
-          <Button size="lg" className="rounded-full shadow-lg">
+          <Button size="lg" className="rounded-full shadow-lg" onClick={() => navigate('/cart')}>
             <ShoppingBag className="h-5 w-5 mr-2" />
             {getCartItemsCount()} • {getTotalPrice().toFixed(2)} €
           </Button>

@@ -316,11 +316,11 @@ export default function Schools() {
                   </Button>
                 ) : (
                   <>
-                    <Button variant="outline" size="sm" className="flex-1">
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => window.location.href = `/school-details/${school.id}`}>
                       Détails
                     </Button>
                     {profile.role === 'ecole' && (
-                      <Button size="sm" className="flex-1">
+                      <Button size="sm" className="flex-1" onClick={() => window.location.href = '/shop'}>
                         Boutique
                       </Button>
                     )}
