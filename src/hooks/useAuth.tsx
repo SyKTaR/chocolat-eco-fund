@@ -129,15 +129,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur de déconnexion",
-        description: error.message,
-      });
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Sign out error:', error);
+        toast({
+          variant: "destructive",
+          title: "Erreur de déconnexion",
+          description: error.message,
+        });
+      } else {
+        // Force clear local state
+        setUser(null);
+        setProfile(null);
+        setSession(null);
+        toast({
+          title: "Déconnexion réussie",
+          description: "Vous avez été déconnecté avec succès.",
+        });
+      }
+      return { error };
+    } catch (err) {
+      console.error('Unexpected error during sign out:', err);
+      // Force clear state even if there's an error
+      setUser(null);
+      setProfile(null);
+      setSession(null);
+      return { error: null };
     }
-    return { error };
   };
 
   const value = {
