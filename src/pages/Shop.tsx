@@ -77,29 +77,50 @@ export default function Shop() {
   const fetchCartItems = async () => {
     if (!profile?.id) return;
 
-    const { data, error } = await supabase
+    // Get cart items first
+    const { data: cartData, error: cartError } = await supabase
       .from('cart_items')
-      .select(`
-        id,
-        product_id,
-        quantity,
-        products!inner(
-          id,
-          name,
-          description,
-          price,
-          image_url
-        )
-      `)
+      .select('id, product_id, quantity')
       .eq('user_id', profile.id);
 
-    if (!error) {
-      const formattedData = (data || []).map(item => ({
-        ...item,
-        product: item.products
-      }));
-      setCartItems(formattedData);
+    if (cartError) {
+      console.error('Error fetching cart:', cartError);
+      return;
     }
+
+    if (!cartData || cartData.length === 0) {
+      setCartItems([]);
+      return;
+    }
+
+    // Get products for cart items
+    const productIds = cartData.map(item => item.product_id);
+    const { data: productsData, error: productsError } = await supabase
+      .from('products')
+      .select('id, name, description, price, image_url')
+      .in('id', productIds);
+
+    if (productsError) {
+      console.error('Error fetching products:', productsError);
+      return;
+    }
+
+    // Combine cart items with product data
+    const formattedCartItems = cartData.map(cartItem => {
+      const product = productsData?.find(p => p.id === cartItem.product_id);
+      return {
+        ...cartItem,
+        product: product || {
+          id: '',
+          name: 'Produit non trouvé',
+          description: '',
+          price: 0,
+          image_url: ''
+        }
+      };
+    });
+
+    setCartItems(formattedCartItems);
   };
 
   useEffect(() => {

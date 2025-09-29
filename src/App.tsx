@@ -12,6 +12,8 @@ import CampaignDetails from "./pages/CampaignDetails";
 import Stores from "./pages/Stores";
 import StoreDetails from "./pages/StoreDetails";
 import ManageSchoolsPage from "./pages/ManageSchools";
+import SchoolDetailsPage from "./pages/SchoolDetails";
+import CartPage from "./pages/Cart";
 import Schools from "./pages/Schools";
 import Shop from "./pages/Shop";
 import Orders from "./pages/Orders";
@@ -102,6 +104,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ManageSchoolsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/school-details/:schoolId"
+              element={
+                <ProtectedRoute>
+                  <SchoolDetailsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <CartPage />
                 </ProtectedRoute>
               }
             />
